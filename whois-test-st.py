@@ -9,12 +9,15 @@ request_domain = st.text_input('Введите сайт для проверки 
 if request_domain.strip() != '':
     my_whois = WhoisData(request_domain)
 
-    py_whois = whois.whois(request_domain)
+    try:
+        py_whois = whois.whois(request_domain)
+    except Exception:
+        py_whois = None
     
-    st.write('**Domain:**&emsp;`' + str(py_whois.domain) + '`&emsp;`' + my_whois.getDomainName() + '`')
-    st.write('**Name:**&emsp;`' + str(py_whois.name) + '`&emsp;`' + my_whois.owner['name'] + '`')
-    st.write('**Person:**&emsp;`' + str(py_whois.person) + '`&emsp;`' + my_whois.owner['person'] + '`')
-    st.write('**Org:**&emsp;`' + str(py_whois.org) + '`&emsp;`' + my_whois.owner['org'] + '`')
+    st.write('**Domain:**&emsp;`' + (str(py_whois.domain) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.getDomainName() + '`')
+    st.write('**Name:**&emsp;`' + (str(py_whois.name) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.owner['name'] + '`')
+    st.write('**Person:**&emsp;`' + (str(py_whois.person) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.owner['person'] + '`')
+    st.write('**Org:**&emsp;`' + (str(py_whois.org) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.owner['org'] + '`')
     st.write('**WHOIS server:**&emsp;`' + '\t\t' + '`&emsp;`' + my_whois.response_from + '`')
 
     st.divider()
