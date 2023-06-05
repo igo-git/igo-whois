@@ -14,11 +14,14 @@ if request_domain.strip() != '':
     except Exception:
         py_whois = None
     
-    st.write('**Domain:**&emsp;`' + (str(py_whois.domain) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.getDomainName() + '`')
-    st.write('**Name:**&emsp;`' + (str(py_whois.name) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.owner['name'] + '`')
-    st.write('**Person:**&emsp;`' + (str(py_whois.person) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.owner['person'] + '`')
-    st.write('**Org:**&emsp;`' + (str(py_whois.org) if py_whois is not None else 'No domain data') + '`&emsp;`' + my_whois.owner['org'] + '`')
-    st.write('**WHOIS server:**&emsp;`' + '\t\t' + '`&emsp;`' + my_whois.response_from + '`')
+    res_table  = '| | python-whois | igo-whois |\n'
+    res_table += '|-------------|-----------|-----------|\n'
+    res_table += '| **Domain:** | `' + (str(py_whois.domain) if py_whois is not None else 'No domain data') + '` | `' + my_whois.getDomainName() + '` |\n'
+    res_table += '|**Name:**|`' + (str(py_whois.name) if py_whois is not None else 'No domain data') + '`|`' + my_whois.owner['name'] + '`|\n'
+    res_table += '|**Person:**|`' + (str(py_whois.person) if py_whois is not None else 'No domain data') + '`|`' + my_whois.owner['person'] + '`|\n'
+    res_table += '|**Org:**|`' + (str(py_whois.org) if py_whois is not None else 'No domain data') + '`|`' + my_whois.owner['org'] + '`|\n'
+    res_table += '|**WHOIS server:**| &mdash; | `' + my_whois.response_from + '`|\n'
+    st.write(res_table)
 
     st.divider()
 
@@ -28,5 +31,4 @@ if request_domain.strip() != '':
 
     st.divider()
     st.json(my_whois.info_dict)
-
 
