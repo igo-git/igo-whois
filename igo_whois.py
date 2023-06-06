@@ -36,6 +36,7 @@ class WhoisData():
             self.domain_name=domain
         whois = whois.lower()
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(15)
         try:
             s.connect((whois, 43))
         except Exception:
@@ -107,6 +108,7 @@ class WhoisData():
 
 def ianna(domain):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(15)
     s.connect(("whois.iana.org", 43))
     s.send((domain + "\r\n").encode())
     response = b""
