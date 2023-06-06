@@ -3,8 +3,14 @@ import time
 from urllib.parse import urlparse
 
 def getDomainNameByUrl(url):
-    result = urlparse(url)
-    return url if result.scheme == '' else result.netloc
+    print(url)
+    if (idx := url.find('://')) > -1:
+        url = url[idx + 3:]
+    if (idx := url.find(':')) > 0:
+        url = url[:idx]
+    if (idx := url.find('/')) > 0:
+        url = url[:idx]
+    return url.lower()
 
 def encodeDomainName(domain_name):
     return domain_name.lower().encode('idna').decode('utf-8')
@@ -13,12 +19,13 @@ def decodeDomainName(domain_name):
     return domain_name.lower().encode('utf-8').decode('idna')
 
 class WhoisData():
-    def __init__(self, domain_name):
+    def __init__(self, domain_name, whois_server=''):
         self.domain_name = domain_name.lower().encode('idna').decode('utf-8')
         self.raw_info = ''
         self.owner = {}
         self.info_dict = {}
-        self._getWhoisInfo()
+        self.response_from = ''
+        self._getWhoisInfo(whois_server)
 
     def getDomainName(self):
         return self.domain_name.encode('utf-8').decode('idna')
@@ -28,6 +35,7 @@ class WhoisData():
             domain = self.domain_name
         else:
             self.domain_name=domain
+        whois = whois.lower()
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             s.connect((whois, 43))
@@ -70,14 +78,21 @@ class WhoisData():
                 whois_ip = self._get_whois(getDomainNameByUrl(whois_ip['Registrar WHOIS Server']))
         return whois_ip if whois_ip else False
 
-    def _getWhoisInfo(self):
-        if whois := ianna(self.domain_name):
-            time.sleep(1)
-            w = self._get_whois(whois)
+    def _getWhoisInfo(self, whois_server):
+        if whois_server == '':
+            if whois := ianna(self.domain_name):
+                time.sleep(1)
+                w = self._get_whois(whois)
+                while not w and len(self.domain_name.split('.')) > 2:
+                    w = self._get_whois(whois, self.domain_name.split('.', 1)[1])
+            else:
+                w = self._get_whois('whois.ripe.net')
+                while not w and len(self.domain_name.split('.')) > 2:
+                    w = self._get_whois(whois, self.domain_name.split('.', 1)[1])
+        else:
+            w = self._get_whois(whois_server)
             while not w and len(self.domain_name.split('.')) > 2:
                 w = self._get_whois(whois, self.domain_name.split('.', 1)[1])
-        else:
-            self._get_whois('whois.ripe.net')
         for key in self.info_dict.keys():
             if key.lower() in ['org', 'organization', 'registrant organization', 'organisation', 'registrant organisation']:
                 self.owner['org'] = self.info_dict[key]
