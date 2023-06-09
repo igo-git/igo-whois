@@ -26,8 +26,7 @@ if request_domain.strip() != '':
     st.divider()
 
     with st.expander('Raw WHOIS data'):
-        st.text(my_whois.raw_info)
-    # st.code(my_whois.raw_info, language=None)
+        st.code(my_whois.raw_info, language='yaml')
 
     st.divider()
     st.json(my_whois.info_dict)
